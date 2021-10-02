@@ -1,9 +1,7 @@
 #
 
-from math import radian, degree, pi, copysign, pow, sqrt
+from math import radians, degrees, pi, copysign, pow, sqrt
 import numpy as np
-import scipy as sp
-
 
 class Quaternion:
     def __init__(self):
@@ -23,24 +21,24 @@ class Quaternion:
         return c
     
     @staticmethod
-    def derivative_quaternion(q, w)
-    """
-    q = [q0, q1, q2, q3] # 쿼터니언
-    w = P*i + Q*j + R*k  # 각속도
-    """
-    q = np.array(q)
-    A = np.array([[0, -w[0], -w[1], -w[2]],
-                  [w[0], 0, w[2], -w[1]],
-                  [w[1], -w[2], 0, w[0]],
-                  [w[2], w[1], -w[0], 0]], dtype=np.float64)
-    dq = 0.5 * A @ q
-    return dq
+    def derivative_quat(q, w):
+        """
+        q = [q0, q1, q2, q3] # 쿼터니언
+        w = P*i + Q*j + R*k  # 각속도
+        """
+        q = np.array(q)
+        A = np.array([[0, -w[0], -w[1], -w[2]],
+                      [w[0], 0, w[2], -w[1]],
+                      [w[1], -w[2], 0, w[0]],
+                      [w[2], w[1], -w[0], 0]], dtype=np.float64)
+        dq = 0.5 * A @ q
+        return dq
     
     @staticmethod
-    def euler2quaternion(roll, pitch, yaw):
-        psi = yaw / 2
-        phi = roll / 2
-        theta = pitch / 2
+    def euler2quat(euler): # roll, pitch, yaw
+        psi = euler[2] / 2
+        phi = euler[0] / 2
+        theta = euler[1] / 2
         
         sinpsi = np.sin(psi)
         cospsi = np.cos(psi)
@@ -49,15 +47,15 @@ class Quaternion:
         sinthe = np.sin(theta)
         costhe = np.cos(theta)
         
-        q1 = cospsi*cosphi*costhe+sinpsi*sinphi*sinthe
-        q2 = sinphi*costhe*cospsi-cosphi*sinthe*sinpsi
-        q3 = cosphi*sinthe*cospsi+sinphi*costhe*sinpsi
-        q4 = cosphi*costhe*sinpsi-sinphi*sinthe*cospsi
+        q0 = cospsi*cosphi*costhe+sinpsi*sinphi*sinthe
+        q1 = sinphi*costhe*cospsi-cosphi*sinthe*sinpsi
+        q2 = cosphi*sinthe*cospsi+sinphi*costhe*sinpsi
+        q3 = cosphi*costhe*sinpsi-sinphi*sinthe*cospsi
         
         return q0, q1, q2, q3
     
     @staticmethod
-    def quaternion2euler(q):
+    def quat2euler(q):
         q2 = []
         for i in q:
             q2.append(pow(i, 2))
